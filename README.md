@@ -1,5 +1,8 @@
-# conditional-motion-propagation
-Code for our CVPR 2019 accepted paper: "Self-Supervised Learning via Conditional Motion Propagation"
+### Paper
+Xiaohang Zhan, Xingang Pan, Ziwei Liu, Dahua Lin, Chen Change Loy, ["Self-Supervised Learning via Conditional Motion Propagation"](https://arxiv.org/abs/1903.11412), CVPR 2019
+
+Project Page:
+[link](http://mmlab.ie.cuhk.edu.hk/projects/CMP/)
 
 
 Coming soon...
