@@ -11,7 +11,7 @@ Coming soon...
 ```
 @inproceedings{zhan2019self,
   title={Self-Supervised Learning via Conditional Motion Propagation},
-  author={Zhan, Xiaohang and Pan, Xingang and Liu, Ziwei and Lin, Dahua and Change Loy, Chen},
+  author={Zhan, Xiaohang and Pan, Xingang and Liu, Ziwei and Lin, Dahua and Loy, Chen Change},
   booktitle={Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
   year={2019}
 }
