@@ -5,7 +5,9 @@ Project Page:
 [link](http://mmlab.ie.cuhk.edu.hk/projects/CMP/)
 
 
-Coming soon...
+
+### Notice
+Code coming soon
 
 ### Bibtex
 ```
