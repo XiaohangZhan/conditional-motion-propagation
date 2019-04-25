@@ -1,4 +1,5 @@
 import sys
+import mc
 import torch
 from torch.utils.data import Dataset
 import torchvision.transforms as transforms
@@ -45,7 +46,7 @@ def pil_loader_str(img_str, ch):
             img = img.convert('RGB')
         return img
 
-class ImageFlowDataset(Dataset):
+class McImageFlowDataset(Dataset):
     def __init__(self, meta_file, config, phase):
         self.img_transform = transforms.Compose([
             transforms.Normalize(config['data_mean'], config['data_div'])
@@ -69,7 +70,10 @@ class ImageFlowDataset(Dataset):
                     raise Exception("No such flow_file_type: {}".format(self.flow_file_type))
         print("read meta done, total: {}".format(self.num))
 
+
+        self.initialized = False
         self.phase = phase
+        self.memcached_client = config.get('memcached_client', None)
 
         self.short_size = config.get('short_size', None)
         self.long_size = config.get('long_size', None)
@@ -88,20 +92,75 @@ class ImageFlowDataset(Dataset):
     def __len__(self):
         return self.num
 
-    def __getitem__(self, idx):
+    def _init_memcached(self):
+        if not self.initialized:
+            assert self.memcached_client is not None, "Please specify the path of your memcached_client"
+            server_list_config_file = "{}/server_list.conf".format(self.memcached_client)
+            client_config_file = "{}/client.conf".format(self.memcached_client)
+            self.mclient = mc.MemcachedClient.GetInstance(server_list_config_file, client_config_file)
+            self.initialized = True
+ 
+    def _read_one(self, idx=None):
+        if idx is None:
+            idx = np.random.randint(self.num)
         img1_fn = self.metas[idx][0]
         img2_fn = self.metas[idx][1]
         if self.flow_file_type == 'flo':
             flowname = self.metas[idx][2]
-            flow = read_flo_file(flowname) # h, w, 2
         else:
             flownamex = self.metas[idx][2]
             flownamey = self.metas[idx][3]
-            flowx = np.array(Image.open(flownamex)).astype(np.float32) / 255 * 100 - 50
-            flowy = np.array(Image.open(flownamey)).astype(np.float32) / 255 * 100 - 50
-            flow = np.concatenate((flowx[:,:,np.newaxis], flowy[:,:,np.newaxis]), axis=2)
-        img1 = pil_loader_str(img1_fn, ch=3)
-        img2 = pil_loader_str(img2_fn, ch=3)
+
+        try:
+            img1_value = mc.pyvector()
+            self.mclient.Get(img1_fn, img1_value)
+            img_value_str1 = mc.ConvertBuffer(img1_value)
+            img1 = pil_loader(img_value_str1, ch=3)
+
+            img2_value = mc.pyvector()
+            self.mclient.Get(img2_fn, img2_value)
+            img_value_str2 = mc.ConvertBuffer(img2_value)
+            img2 = pil_loader(img_value_str2, ch=3)
+
+            if img1 is None or img2 is None:
+                raise Exception("None image")
+
+            if self.flow_file_type == "flo":
+                flo_value = mc.pyvector()
+                self.mclient.Get(flowname, flo_value)
+                flo_value_str = mc.ConvertBuffer(flo_value)
+                flow = read_flo_file(flo_value_str, memcached=True) # w, h, 2
+            else:
+                flox_value = mc.pyvector()
+                self.mclient.Get(flownamex, flox_value)
+                flox_value_str = mc.ConvertBuffer(flox_value)
+                flowx = pil_loader(flox_value_str, ch=1)
+                if flowx is None:
+                    raise Exception("None flowx")
+
+                floy_value = mc.pyvector()
+                self.mclient.Get(flownamey, floy_value)
+                floy_value_str = mc.ConvertBuffer(floy_value)
+                flowy = pil_loader(floy_value_str, ch=1)
+                if flowy is None:
+                    raise Exception("None flowy")
+
+                flowx = np.array(flowx).astype(np.float32) / 255 * 100 - 50
+                flowy = np.array(flowy).astype(np.float32) / 255 * 100 - 50
+                flow = np.concatenate((flowx[:,:,np.newaxis], flowy[:,:,np.newaxis]), axis=2)
+
+        except:
+            if self.flow_file_type == "flo":
+                print('Read image or flow [{}] failed ({}) ({})'.format(idx, img1_fn, flowname))
+            else:
+                print('Read image or flow [{}] failed ({}) ({}) ({})'.format(idx, img1_fn, flownamex, flownamey))
+            return self._read_one()
+        else:
+            return img1, img2, flow
+
+    def __getitem__(self, idx):
+        self._init_memcached()
+        img1, img2, flow = self._read_one(idx)
 
         ## check size
         assert img1.height == flow.shape[0]
@@ -138,7 +197,7 @@ class ImageFlowDataset(Dataset):
         mask = torch.from_numpy(mask.transpose((2, 0, 1)).astype(np.float32))
         return img1, sparse_flow, mask, flow, img2
 
-class ImageDataset(Dataset):
+class McImageDataset(Dataset):
     def __init__(self, meta_file, config):
         self.img_transform = transforms.Compose([
             transforms.Normalize(config['data_mean'], config['data_div'])
@@ -150,6 +209,10 @@ class ImageDataset(Dataset):
         self.metas = [l.rstrip() for l in lines]
         print("read meta done, total: {}".format(self.num))
 
+
+        self.initialized = False
+        self.memcached = config.get('memcached_client', None)
+
         self.short_size = config.get('short_size', None)
         self.long_size = config.get('long_size', None)
         self.crop_size = config.get('crop_size', None)
@@ -157,9 +220,35 @@ class ImageDataset(Dataset):
     def __len__(self):
         return self.num
 
-    def __getitem__(self, idx):
+    def _init_memcached(self):
+        if not self.initialized:
+            assert self.memcached_client is not None, "Please specify the path of your memcached_client"
+            server_list_config_file = "{}/server_list.conf".format(self.memcached_client)
+            client_config_file = "{}/client.conf".format(self.memcached_client)
+            self.mclient = mc.MemcachedClient.GetInstance(server_list_config_file, client_config_file)
+            self.initialized = True
+ 
+    def _read_one(self, idx=None):
+        if idx is None:
+            idx = np.random.randint(self.num)
         img_fn = self.metas[idx]
-        img = pil_loader_str(img_fn, ch=3)
+        try:
+            img_value = mc.pyvector()
+            self.mclient.Get(img_fn, img_value)
+            img_value_str = mc.ConvertBuffer(img_value)
+            img = pil_loader(img_value_str, ch=3)
+
+            if img is None:
+                raise Exception("None image")
+        except:
+            print('Read image [{}] failed ({})'.format(idx, img_fn))
+            return self._read_one()
+        else:
+            return img
+
+    def __getitem__(self, idx):
+        self._init_memcached()
+        img = self._read_one(idx)
 
         ## resize
         if self.short_size is not None or self.long_size is not None:

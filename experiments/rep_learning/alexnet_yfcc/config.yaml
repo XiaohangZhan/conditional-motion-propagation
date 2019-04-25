@@ -46,7 +46,6 @@ data:
     val_source:
         - data/yfcc/lists/val.txt
     memcached: False
-    memcached_client: "/mnt/lustre/share/memcached_client"
 trainer:
     initial_val: True
     print_freq: 100

@@ -9,7 +9,6 @@ from torch.utils.data import DataLoader
 
 import models
 import utils
-from dataset import McImageFlowDataset, McImageDataset
 
 
 class Trainer(object):
@@ -67,8 +66,17 @@ class Trainer(object):
                 args.model['warmup_steps'], last_iter=self.start_iter-1)
 
         # Data loader
+        if args.data['memcached']:
+            from dataset_mc import McImageFlowDataset, McImageDataset
+            imageflow_dataset = McImageFlowDataset
+            image_dataset = McImageDataset
+        else:
+            from dataset import ImageFlowDataset, ImageDataset
+            imageflow_dataset = ImageFlowDataset
+            image_dataset = ImageDataset
+
         if not (args.validate or args.extract): # train
-            train_dataset = McImageFlowDataset(args.data['train_source'], args.data, 'train')
+            train_dataset = imageflow_dataset(args.data['train_source'], args.data, 'train')
             train_sampler = utils.DistributedGivenIterationSampler(
                             train_dataset, args.model['total_iter'],
                             args.data['batch_size'], last_iter=self.start_iter-1)
@@ -77,13 +85,13 @@ class Trainer(object):
                 num_workers=args.data['workers'], pin_memory=False, sampler=train_sampler)
 
         if not args.extract: # train or offline validation
-            val_dataset = McImageFlowDataset(args.data['val_source'], args.data, 'val')
+            val_dataset = imageflow_dataset(args.data['val_source'], args.data, 'val')
             val_sampler = utils.DistributedSequentialSampler(val_dataset)
             self.val_loader = DataLoader(
                 val_dataset, batch_size=args.data['batch_size_test'], shuffle=False,
                 num_workers=args.data['workers'], pin_memory=False, sampler=val_sampler)
         else: # extract
-            extract_dataset = McImageDataset(args.extract_source, args.data)
+            extract_dataset = image_dataset(args.extract_source, args.data)
             self.extract_metas = extract_dataset.metas
             extract_sampler = utils.DistributedSequentialSampler(extract_dataset)
             self.extract_loader = DataLoader(
