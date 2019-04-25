@@ -8,6 +8,7 @@ Xiaohang Zhan, Xingang Pan, Ziwei Liu, Dahua Lin, Chen Change Loy, "[Self-Superv
  
 * python>=3.6
 * pytorch>=0.4.0
+* opencv-python>=2.4.9
 * tensorboardX (optional)
 
 ### Data collection

@@ -55,4 +55,4 @@ trainer:
     val_disp_start_iter: 0
     val_disp_end_iter: 16
     loss_record: ['loss_flow']
-    tensorboard: True
+    tensorboard: False
