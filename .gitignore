@@ -10,3 +10,4 @@ event*
 pretrained
 data
 tools/tensorboard.sh
+kill.sh

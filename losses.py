@@ -6,7 +6,7 @@ from torch.autograd import Variable
 import random
 import math
 
-def MultiChannelSoftBinaryCrossEntropy(input, target, size_average=True):
+def MultiChannelSoftBinaryCrossEntropy(input, target, reduction='mean'):
     '''
     input: N x 38 x H x W --> 19N x 2 x H x W
     target: N x 19 x H x W --> 19N x 1 x H x W
@@ -15,13 +15,13 @@ def MultiChannelSoftBinaryCrossEntropy(input, target, size_average=True):
     target = target.view(-1, 1, input.size(2), input.size(3))
 
     logsoftmax = nn.LogSoftmax(dim=1)
-    if size_average:
+    if reduction == 'mean':
         return torch.mean(torch.sum(-target * logsoftmax(input), dim=1))
     else:
         return torch.sum(torch.sum(-target * logsoftmax(input), dim=1))
 
 class EdgeAwareLoss():
-    def __init__(self, nc=2, loss_type="L1", size_average=True):
+    def __init__(self, nc=2, loss_type="L1", reduction='mean'):
         assert loss_type in ['L1', 'BCE'], "Undefined loss type: {}".format(loss_type)
         self.nc = nc
         self.loss_type = loss_type
@@ -30,9 +30,9 @@ class EdgeAwareLoss():
         self.kernely = Variable(torch.Tensor([[1,2,1],[0,0,0],[-1,-2,-1]]).cuda())
         self.kernely = self.kernely.repeat(nc,1,1,1)
         self.bias = Variable(torch.zeros(nc).cuda())
-        self.size_average = size_average
+        self.reduction = reduction
         if loss_type == 'L1':
-            self.loss = nn.SmoothL1Loss(size_average=size_average)
+            self.loss = nn.SmoothL1Loss(reduction=reduction)
         elif loss_type == 'BCE':
             self.loss = self.bce2d
 
@@ -40,7 +40,7 @@ class EdgeAwareLoss():
         assert not target.requires_grad
         beta = 1 - torch.mean(target)
         weights = 1 - beta + (2 * beta - 1)  * target
-        loss = nn.functional.binary_cross_entropy(input, target, weights, size_average=self.size_average)
+        loss = nn.functional.binary_cross_entropy(input, target, weights, reduction=self.reduction)
         return loss
 
     def get_edge(self, var):
@@ -67,8 +67,8 @@ def KLD(mean, logvar):
     return -0.5 * torch.sum(1 + logvar - mean.pow(2) - logvar.exp())
 
 class DiscreteLoss():
-    def __init__(self, nbins, fmax, size_average=True):
-        self.loss = nn.CrossEntropyLoss(size_average=size_average)
+    def __init__(self, nbins, fmax, reduction='mean'):
+        self.loss = nn.CrossEntropyLoss(reduction=reduction)
         assert nbins % 2 == 1, "nbins should be odd"
         self.nbins = nbins
         self.fmax = fmax
@@ -88,8 +88,8 @@ class DiscreteLoss():
         return self.loss(input[:,:self.nbins,...], target[:,0,...]) + self.loss(input[:,self.nbins:,...], target[:,1,...])
 
 class MultiDiscreteLoss():
-    def __init__(self, nbins=19, fmax=47.5, size_average=True, xy_weight=(1., 1.), quantize_strategy='linear'):
-        self.loss = nn.CrossEntropyLoss(size_average=size_average)
+    def __init__(self, nbins=19, fmax=47.5, reduction='mean', xy_weight=(1., 1.), quantize_strategy='linear'):
+        self.loss = nn.CrossEntropyLoss(reduction=reduction)
         assert nbins % 2 == 1, "nbins should be odd"
         self.nbins = nbins
         self.fmax = fmax
@@ -119,8 +119,8 @@ class MultiDiscreteLoss():
             return self.x_weight * self.loss(input[:,:self.nbins,...], target[:,0,...]) + self.y_weight * self.loss(input[:,self.nbins:,...], target[:,1,...])
 
 class MultiL1Loss():
-    def __init__(self, size_average=True):
-        self.loss = nn.SmoothL1Loss(size_average=size_average)
+    def __init__(self, reduction='mean'):
+        self.loss = nn.SmoothL1Loss(reduction=reduction)
 
     def __call__(self, input, target):
         size = target.shape[2:4]
@@ -142,8 +142,8 @@ class MultiMSELoss():
         return loss
         
 class JointDiscreteLoss():
-    def __init__(self, nbins=19, fmax=47.5, size_average=True, quantize_strategy='linear'):
-        self.loss = nn.CrossEntropyLoss(size_average=size_average)
+    def __init__(self, nbins=19, fmax=47.5, reduction='mean', quantize_strategy='linear'):
+        self.loss = nn.CrossEntropyLoss(reduction=reduction)
         assert nbins % 2 == 1, "nbins should be odd"
         self.nbins = nbins
         self.fmax = fmax
@@ -170,8 +170,8 @@ class JointDiscreteLoss():
         return self.loss(input, target)
 
 class PolarDiscreteLoss():
-    def __init__(self, abins=30, rbins=20, fmax=50., size_average=True, ar_weight=(1., 1.), quantize_strategy='linear'):
-        self.loss = nn.CrossEntropyLoss(size_average=size_average)
+    def __init__(self, abins=30, rbins=20, fmax=50., reduction='mean', ar_weight=(1., 1.), quantize_strategy='linear'):
+        self.loss = nn.CrossEntropyLoss(reduction=reduction)
         self.fmax = fmax
         self.rbins = rbins
         self.abins = abins
@@ -205,8 +205,8 @@ class PolarDiscreteLoss():
         return self.a_weight * self.loss(input[:,:self.abins,...], target[:,0,...]) + self.r_weight * self.loss(input[:,self.abins:,...], target[:,1,...])
 
 class WeightedDiscreteLoss():
-    def __init__(self, nbins=19, fmax=47.5, size_average=True):
-        self.loss = CrossEntropy2d(size_average=size_average)
+    def __init__(self, nbins=19, fmax=47.5, reduction='mean'):
+        self.loss = CrossEntropy2d(reduction=reduction)
         assert nbins % 2 == 1, "nbins should be odd"
         self.nbins = nbins
         self.fmax = fmax
@@ -226,10 +226,10 @@ class WeightedDiscreteLoss():
 
 
 class CrossEntropy2d(nn.Module):
-    def __init__(self, size_average=True, ignore_label=-1):
+    def __init__(self, reduction='mean', ignore_label=-1):
         super(CrossEntropy2d, self).__init__()
-        self.size_average = size_average
         self.ignore_label = ignore_label
+        self.reduction = reduction
 
     def forward(self, predict, target, weight=None):
         """
@@ -250,7 +250,7 @@ class CrossEntropy2d(nn.Module):
         target = target[target_mask]
         predict = predict.transpose(1, 2).transpose(2, 3).contiguous()
         predict = predict[target_mask.view(n, h, w, 1).repeat(1, 1, 1, c)].view(-1, c)
-        loss = F.cross_entropy(predict, target, weight=weight, size_average=self.size_average)
+        loss = F.cross_entropy(predict, target, weight=weight, reduction=self.reduction)
         return loss
 
 #class CrossPixelSimilarityLoss():
@@ -529,106 +529,3 @@ def MaskL1Loss(input, target, mask):
     if total > 0:
         res = res / (total * input_size[1])
     return res
-
-class PerceptStyleLoss(object):
-    def __init__(self):
-        pass
-
-    def __call__(self, LossNet, fake_img, real_img):
-
-        with torch.no_grad():
-            real_feature = LossNet(real_img.detach())
-    
-        fake_feature = LossNet(fake_img)
-    
-        perceptual_penalty = self._perceptual_loss(fake_feature, real_feature)
-        style_penalty = self._style_loss(fake_feature, real_feature)
-    
-        return perceptual_penalty, style_penalty
-
-    def _perceptual_loss(self, fake_feature, real_feature):
-
-        loss_relu1 = F.l1_loss(fake_feature['relu1'], real_feature['relu1'].detach())
-        loss_relu2 = F.l1_loss(fake_feature['relu2'], real_feature['relu2'].detach())
-        loss_relu3 = F.l1_loss(fake_feature['relu3'], real_feature['relu3'].detach())
-    
-        loss = loss_relu1 + loss_relu2 + loss_relu3
-    
-        return loss
-
-    def _style_loss(self, fake_feature, real_feature):
-
-        loss_relu1 = F.l1_loss(self._gram_matrix(fake_feature['relu1']), self._gram_matrix(real_feature['relu1'].detach()))
-        loss_relu2 = F.l1_loss(self._gram_matrix(fake_feature['relu2']), self._gram_matrix(real_feature['relu2'].detach()))
-        loss_relu3 = F.l1_loss(self._gram_matrix(fake_feature['relu3']), self._gram_matrix(real_feature['relu3'].detach()))
-
-        loss = loss_relu1 + loss_relu2 + loss_relu3
-
-        return loss
-
-    def _gram_matrix(self, y):
-        (b, ch, h, w) = y.size()
-        features = y.view(b, ch, w * h)
-        features_t = features.transpose(1, 2)
-        gram = features.bmm(features_t) / (ch * h * w)
-        return gram
-
-def TotalVariationLoss(image, mask=None):
-    # shift one pixel and get difference (for both x and y direction)
-    channel_num = image.shape[1]
-    if mask is not None:
-        x_tv = torch.abs(image[:, :, :, :-1] - image[:, :, :, 1:]) * mask[:, :, :, :-1]
-        y_tv = torch.abs(image[:, :, :-1, :] - image[:, :, 1:, :]) * mask[:, :, :-1, :]
-
-        total = torch.sum(mask).item()
-        loss = torch.sum(x_tv) + torch.sum(y_tv)
-        if total > 0:
-            loss = loss / (total * channel_num)
-    else:
-        loss = torch.mean(torch.abs(image[:, :, :, :-1] - image[:, :, :, 1:])) + \
-               torch.mean(torch.abs(image[:, :, :-1, :] - image[:, :, 1:, :]))
-
-    return loss
-
-class ErrorDistr(object):
-    def __init__(self, nbins, fmax):
-        self.nbins = nbins
-        self.fmax = fmax
-        self.step = 2 * fmax / float(nbins)
-        self.bin_sum_x = torch.zeros((nbins), dtype=torch.float32).cuda()
-        self.bin_sum_y = torch.zeros((nbins), dtype=torch.float32).cuda()
-        self.bin_num_x = torch.zeros((nbins), dtype=torch.long).cuda()
-        self.bin_num_y = torch.zeros((nbins), dtype=torch.long).cuda()
-
-    def __call__(self, input, target, mask=None):
-        err_x = torch.abs(input[:,0,:,:] - target[:,0,:,:])
-        err_y = torch.abs(input[:,1,:,:] - target[:,1,:,:]) # NHW
-        qtz_target = self.tobin(target) # long
-        if mask is not None:
-            mask = (mask > 0.5)
-            err_x_flat = torch.masked_select(err_x, mask)
-            err_y_flat = torch.masked_select(err_y, mask)
-            tgt_x_flat = torch.masked_select(qtz_target[:,0,:,:], mask)
-            tgt_y_flat = torch.masked_select(qtz_target[:,1,:,:], mask)
-        else:
-            err_x_flat = err_x.view(-1, 1).squeeze()
-            err_y_flat = err_y.view(-1, 1).squeeze()
-            tgt_x_flat = qtz_target[:,0,:,:].view(-1, 1).squeeze()
-            tgt_y_flat = qtz_target[:,1,:,:].view(-1, 1).squeeze()
-
-        for i in range(self.nbins):
-            index = (tgt_x_flat == i)
-            self.bin_num_x[i] += index.long().sum()
-            self.bin_sum_x[i] += err_x_flat[index].sum()
-
-        for i in range(self.nbins):
-            index = (tgt_y_flat == i)
-            self.bin_num_y[i] += index.long().sum()
-            self.bin_sum_y[i] += err_y_flat[index].sum()
-
-        #return self.bin_sum_x / self.bin_num_x, self.bin_sum_y / self.bin_num_y
-
-    def tobin(self, target):
-        target = torch.clamp(target, -self.fmax + 1e-3, self.fmax - 1e-3)
-        quantized_target = torch.floor((target + self.fmax) / self.step)
-        return quantized_target.long()
