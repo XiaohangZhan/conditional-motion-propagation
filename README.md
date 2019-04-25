@@ -6,8 +6,8 @@ Xiaohang Zhan, Xingang Pan, Ziwei Liu, Dahua Lin, Chen Change Loy, "[Self-Superv
 
 ### Requirements
  
-* python3
-* pytorch>=0.4.1
+* python>=3.6
+* pytorch>=0.4.0
 * tensorboardX (optional)
 
 ### Data collection
@@ -15,6 +15,10 @@ Xiaohang Zhan, Xingang Pan, Ziwei Liu, Dahua Lin, Chen Change Loy, "[Self-Superv
 [YFCC frames](https://dl.fbaipublicfiles.com/unsupervised-video/UnsupVideo_Frames_v1.tar.gz) (45G).
 [YFCC optical flows (LiteFlowNet)](https://drive.google.com/open?id=1S_TU1UjKms-U_Q4bOhXfUfIJX5hgwOtq) (29G).
 [YFCC lists](https://drive.google.com/open?id=1ObzO7xWXolPKrIC39XCvjttZYEoVn6k2) (251M).
+
+### Model collection
+
+* Comming soon
 
 ### Usage
 0. Clone the repo.
@@ -35,7 +39,7 @@ Xiaohang Zhan, Xingang Pan, Ziwei Liu, Dahua Lin, Chen Change Loy, "[Self-Superv
     tar -xf flow_origin.tar.gz
     tar -xf lists.tar.gz
     ```
-    Then folder `data` look like:
+    Then folder `data` looks like:
     ```
     data
       ├── yfcc
@@ -53,7 +57,13 @@ Xiaohang Zhan, Xingang Pan, Ziwei Liu, Dahua Lin, Chen Change Loy, "[Self-Superv
     sh tools/weight_process.sh --config experiments/rep_learning/alexnet_yfcc/config.yaml --iter 70000 # extract weights of the image encoder
     ```
 
-3. Train CMP for Video generationa and Semi-automatic Annotation.
+3. Train CMP for Video generation and Semi-automatic Annotation.
+
+    ```shell
+    # comming soon
+    ```
+
+4. Run demos
 
     ```shell
     # comming soon
