@@ -1,4 +1,3 @@
-import sys
 import mc
 import torch
 from torch.utils.data import Dataset

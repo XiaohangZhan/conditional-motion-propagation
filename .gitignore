@@ -11,3 +11,5 @@ pretrained
 data
 tools/tensorboard.sh
 kill.sh
+experiments/rep_learning_verify
+experiments/debug

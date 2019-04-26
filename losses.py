@@ -67,8 +67,8 @@ def KLD(mean, logvar):
     return -0.5 * torch.sum(1 + logvar - mean.pow(2) - logvar.exp())
 
 class DiscreteLoss():
-    def __init__(self, nbins, fmax, reduction='mean'):
-        self.loss = nn.CrossEntropyLoss(reduction=reduction)
+    def __init__(self, nbins, fmax):
+        self.loss = nn.CrossEntropyLoss()
         assert nbins % 2 == 1, "nbins should be odd"
         self.nbins = nbins
         self.fmax = fmax
