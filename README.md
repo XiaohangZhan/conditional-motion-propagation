@@ -6,12 +6,17 @@ Xiaohang Zhan, Xingang Pan, Ziwei Liu, Dahua Lin, Chen Change Loy, "[Self-Superv
 
 For further information, please contact [Xiaohang Zhan](https://xiaohangzhan.github.io/).
 
-### Requirements
- 
-* python>=3.6
-* pytorch>=0.4.0
-* opencv-python>=2.4.9
-* tensorboardX (optional)
+### Demos
+
+* Conditional motion propagation
+
+* Guided video generation (draw arrows to let a static image animated)
+
+![](demos/demo_video_generation.gif)
+
+* Semi-automatic annotation (first row: interface, auto zoom-in, mask; second row: optical flows)
+
+![](demos/demo_annotation.gif)
 
 ### Data collection
 
@@ -23,7 +28,15 @@ For further information, please contact [Xiaohang Zhan](https://xiaohangzhan.git
 
 * Comming soon
 
+### Requirements
+ 
+* python>=3.6
+* pytorch>=0.4.0
+* opencv-python>=2.4.9
+* tensorboardX (optional)
+
 ### Usage
+
 0. Clone the repo.
 
     ```shell
@@ -73,18 +86,6 @@ For further information, please contact [Xiaohang Zhan](https://xiaohangzhan.git
     ```
 
 ### Results
-
-### Demos
-
-* Conditional motion propagation
-
-* Guided video generation (draw arrows to let a static image animated)
-
-![](demos/demo_video_generation.gif)
-
-* Semi-automatic annotation (first row: interface, auto zoom-in, mask; second row: optical flows)
-
-![](demos/demo_annotation.gif)
 
 ### Bibtex
 
