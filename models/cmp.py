@@ -21,14 +21,15 @@ class CMP(SingleStageModel):
         else:
             raise Exception("No such flow loss: {}".format(model_params['flow_criterion']))
 
+        self.fuser = utils.Fuser(nbins=model_params['nbins'],
+                                 fmax=model_params['fmax'])
         self.model_params = model_params
 
     def eval(self, ret_loss=True):
         with torch.no_grad():
             cmp_output = self.model(self.image_input, self.sparse_input)
         if self.model_params['flow_criterion'] == "DiscreteLoss":
-            self.flow = utils.convert_flow(cmp_output, nbins=self.model_params['nbins'],
-                fmax=self.model_params['fmax'])
+            self.flow = self.fuser.convert_flow(cmp_output)
         else:
             self.flow = cmp_output
         if self.flow.shape[2] != self.image_input.shape[2]:

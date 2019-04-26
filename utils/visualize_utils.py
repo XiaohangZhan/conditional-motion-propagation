@@ -3,15 +3,20 @@ import numpy as np
 import torch
 from . import flowlib
 
-def convert_flow(flow_prob, nbins, fmax):
-    step = 2 * fmax / float(nbins)
-    flow_probx = torch.nn.functional.softmax(flow_prob[:, :nbins, :, :], dim=1)
-    flow_proby = torch.nn.functional.softmax(flow_prob[:, nbins:, :, :], dim=1)
-    mesh = torch.arange(nbins).view(1,-1,1,1).float().cuda() * step - fmax + step / 2
-    flow_probx *= mesh
-    flow_proby *= mesh
-    flow = torch.cat([flow_probx.sum(dim=1, keepdim=True), flow_proby.sum(dim=1, keepdim=True)], dim=1)
-    return flow
+class Fuser(object):
+    def __init__(self, nbins, fmax):
+        self.nbins = nbins
+        self.fmax = fmax
+        self.step = 2 * fmax / float(nbins)
+        self.mesh = torch.arange(nbins).view(1,-1,1,1).float().cuda() * self.step - fmax + self.step / 2
+
+    def convert_flow(self, flow_prob):
+        flow_probx = torch.nn.functional.softmax(flow_prob[:, :self.nbins, :, :], dim=1)
+        flow_proby = torch.nn.functional.softmax(flow_prob[:, self.nbins:, :, :], dim=1)
+        flow_probx *= self.mesh
+        flow_proby *= self.mesh
+        flow = torch.cat([flow_probx.sum(dim=1, keepdim=True), flow_proby.sum(dim=1, keepdim=True)], dim=1)
+        return flow
 
 def visualize_tensor_old(image, mask, flow_pred, flow_target, warped, rgb_gen, image_target, image_mean, image_div):
     together = [
