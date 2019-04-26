@@ -15,11 +15,11 @@ class CMP(nn.Module):
             assert params['flow_decoder'] == "MotionDecoderSkipLayer"
 
         self.image_encoder = models.backbone.__dict__[params['image_encoder']](img_enc_dim, pretrained)
-        self.sparse_encoder = models.modules.__dict__[params['sparse_encoder']](sparse_enc_dim)
+        self.flow_encoder = models.modules.__dict__[params['sparse_encoder']](sparse_enc_dim)
         self.flow_decoder = models.modules.__dict__[params['flow_decoder']](input_dim=img_enc_dim+sparse_enc_dim, output_dim=output_dim, combo=decoder_combo)
 
     def forward(self, image, sparse):
-        sparse_enc = self.sparse_encoder(sparse)
+        sparse_enc = self.flow_encoder(sparse)
         if self.skip_layer:
             img_enc, skip_feat = self.image_encoder(image, ret_feat=True)
             flow_dec = self.flow_decoder(torch.cat((img_enc, sparse_enc), dim=1), skip_feat)
