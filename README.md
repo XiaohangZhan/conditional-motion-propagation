@@ -75,7 +75,8 @@ Xiaohang Zhan, Xingang Pan, Ziwei Liu, Dahua Lin, Chen Change Loy, "[Self-Superv
 ### Demos
 
 * Conditional motion propagation
-* Video generation
+
+* Guided video generation (draw arrows to let a static image animated)
 
 ![](demos/demo_video_generation.gif)
 
