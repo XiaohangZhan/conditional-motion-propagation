@@ -78,7 +78,7 @@ Xiaohang Zhan, Xingang Pan, Ziwei Liu, Dahua Lin, Chen Change Loy, "[Self-Superv
 
 ![](demos/demo_video_generation.gif)
 
-* Semi-automatic Annotation
+* Semi-automatic Annotation (first row: interface, auto zoom-in, mask; second row: optical flows)
 
 ![](demos/demo_annotation.gif)
 
