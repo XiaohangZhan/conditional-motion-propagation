@@ -4,6 +4,8 @@
 
 Xiaohang Zhan, Xingang Pan, Ziwei Liu, Dahua Lin, Chen Change Loy, "[Self-Supervised Learning via Conditional Motion Propagation](https://arxiv.org/abs/1903.11412)", in CVPR 2019 [[Project Page](http://mmlab.ie.cuhk.edu.hk/projects/CMP/)]
 
+For further information, please contact [Xiaohang Zhan](https://xiaohangzhan.github.io/).
+
 ### Requirements
  
 * python>=3.6
