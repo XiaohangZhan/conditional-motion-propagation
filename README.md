@@ -74,11 +74,12 @@ Xiaohang Zhan, Xingang Pan, Ziwei Liu, Dahua Lin, Chen Change Loy, "[Self-Superv
 
 ### Demos
 
+* Conditional motion propagation
 * Video generation
 
 ![](demos/demo_video_generation.gif)
 
-* Semi-automatic Annotation (first row: interface, auto zoom-in, mask; second row: optical flows)
+* Semi-automatic annotation (first row: interface, auto zoom-in, mask; second row: optical flows)
 
 ![](demos/demo_annotation.gif)
 
