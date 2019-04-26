@@ -12,4 +12,5 @@ data
 tools/tensorboard.sh
 kill.sh
 experiments/rep_learning_verify
+experiments/semiauto_annot_verify
 experiments/debug
