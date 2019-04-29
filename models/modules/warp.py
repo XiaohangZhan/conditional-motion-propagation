@@ -1,9 +1,8 @@
 import torch
 import torch.nn as nn
 
-import models
-
 class WarpingLayerBWFlow(nn.Module):
+
     def __init__(self):
         super(WarpingLayerBWFlow, self).__init__()
 
@@ -12,24 +11,34 @@ class WarpingLayerBWFlow(nn.Module):
         flow_for_grip[:,0,:,:] = flow[:,0,:,:] / ((flow.size(3) - 1.0) / 2.0)
         flow_for_grip[:,1,:,:] = flow[:,1,:,:] / ((flow.size(2) - 1.0) / 2.0)
 
-        torchHorizontal = torch.linspace(-1.0, 1.0, image.size(3)).view(1, 1, 1, image.size(3)).expand(image.size(0), 1, image.size(2), image.size(3))
-        torchVertical = torch.linspace(-1.0, 1.0, image.size(2)).view(1, 1, image.size(2), 1).expand(image.size(0), 1, image.size(2), image.size(3))
+        torchHorizontal = torch.linspace(
+            -1.0, 1.0, image.size(3)).view(
+            1, 1, 1, image.size(3)).expand(
+            image.size(0), 1, image.size(2), image.size(3))
+        torchVertical = torch.linspace(
+            -1.0, 1.0, image.size(2)).view(
+            1, 1, image.size(2), 1).expand(
+            image.size(0), 1, image.size(2), image.size(3))
         grid = torch.cat([torchHorizontal, torchVertical], 1).cuda()
 
         grid = (grid + flow_for_grip).permute(0, 2, 3, 1)
         return torch.nn.functional.grid_sample(image, grid)
 
+
 class WarpingLayerFWFlow(nn.Module):
+
     def __init__(self):
         super(WarpingLayerFWFlow, self).__init__()
         self.initialized = False
-       
+
     def forward(self, image, flow, ret_mask = False):
         n, h, w = image.size(0), image.size(2), image.size(3)
 
         if not self.initialized or n != self.meshx.shape[0] or h * w != self.meshx.shape[1]:
-            self.meshx = torch.arange(w).view(1, 1, w).expand(n, h, w).contiguous().view(n, -1).cuda()
-            self.meshy = torch.arange(h).view(1, h, 1).expand(n, h, w).contiguous().view(n, -1).cuda()
+            self.meshx = torch.arange(w).view(1, 1, w).expand(
+                n, h, w).contiguous().view(n, -1).cuda()
+            self.meshy = torch.arange(h).view(1, h, 1).expand(
+                n, h, w).contiguous().view(n, -1).cuda()
             self.warped_image = torch.zeros((n, 3, h, w), dtype=torch.float32).cuda()
             if ret_mask:
                 self.hole_mask = torch.ones((n, 1, h, w), dtype=torch.float32).cuda()

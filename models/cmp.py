@@ -7,6 +7,7 @@ import utils
 from . import SingleStageModel
 
 class CMP(SingleStageModel):
+
     def __init__(self, params, dist_model=False):
         super(CMP, self).__init__(params, dist_model)
         model_params = params['module']
@@ -17,7 +18,8 @@ class CMP(SingleStageModel):
         elif model_params['flow_criterion'] == 'L2':
             self.flow_criterion = nn.MSELoss()
         elif model_params['flow_criterion'] == 'DiscreteLoss':
-            self.flow_criterion = losses.DiscreteLoss(nbins=model_params['nbins'], fmax=model_params['fmax'])
+            self.flow_criterion = losses.DiscreteLoss(
+                nbins=model_params['nbins'], fmax=model_params['fmax'])
         else:
             raise Exception("No such flow loss: {}".format(model_params['flow_criterion']))
 
@@ -33,7 +35,9 @@ class CMP(SingleStageModel):
         else:
             self.flow = cmp_output
         if self.flow.shape[2] != self.image_input.shape[2]:
-            self.flow = nn.functional.interpolate(self.flow, size=self.image_input.shape[2:4], mode="bilinear", align_corners=True)
+            self.flow = nn.functional.interpolate(
+                self.flow, size=self.image_input.shape[2:4],
+                mode="bilinear", align_corners=True)
 
         ret_tensors = {
             'flow_tensors': [self.flow, self.flow_target],
@@ -42,7 +46,9 @@ class CMP(SingleStageModel):
 
         if ret_loss:
             if cmp_output.shape[2] != self.flow_target.shape[2]:
-                cmp_output = nn.functional.interpolate(cmp_output, size=self.flow_target.shape[2:4], mode="bilinear", align_corners=True)
+                cmp_output = nn.functional.interpolate(
+                    cmp_output, size=self.flow_target.shape[2:4],
+                    mode="bilinear", align_corners=True)
             loss_flow = self.flow_criterion(cmp_output, self.flow_target) / self.world_size
             return ret_tensors, {'loss_flow': loss_flow}
         else:   

@@ -3,6 +3,7 @@ import torch.nn as nn
 import math
 
 class MotionDecoderPlain(nn.Module):
+
     def __init__(self, input_dim=512, output_dim=2, combo=[1,2,4]):
         super(MotionDecoderPlain, self).__init__()
         BN = nn.BatchNorm2d
@@ -72,20 +73,28 @@ class MotionDecoderPlain(nn.Module):
             x1 = self.decoder1(x)
             cat_list.append(x1)
         if 2 in self.combo:
-            x2 = nn.functional.interpolate(self.decoder2(x), size=(x.size(2), x.size(3)), mode="bilinear", align_corners=True)
+            x2 = nn.functional.interpolate(
+                self.decoder2(x), size=(x.size(2), x.size(3)),
+                mode="bilinear", align_corners=True)
             cat_list.append(x2)
         if 4 in self.combo:
-            x4 = nn.functional.interpolate(self.decoder4(x), size=(x.size(2), x.size(3)), mode="bilinear", align_corners=True)
+            x4 = nn.functional.interpolate(
+                self.decoder4(x), size=(x.size(2), x.size(3)),
+                mode="bilinear", align_corners=True)
             cat_list.append(x4)
         if 8 in self.combo:
-            x8 = nn.functional.interpolate(self.decoder8(x), size=(x.size(2), x.size(3)), mode="bilinear", align_corners=True)
+            x8 = nn.functional.interpolate(
+                self.decoder8(x), size=(x.size(2), x.size(3)),
+                mode="bilinear", align_corners=True)
             cat_list.append(x8)
            
         cat = torch.cat(cat_list, dim=1)
         flow = self.head(cat)
         return flow
 
+
 class MotionDecoderSkipLayer(nn.Module):
+
     def __init__(self, input_dim=512, output_dim=2, combo=[1,2,4,8]):
         super(MotionDecoderSkipLayer, self).__init__()
 
@@ -180,22 +189,34 @@ class MotionDecoderSkipLayer(nn.Module):
         layer1, layer2, layer4 = skip_feat
 
         x1 = self.decoder1(x)
-        x2 = nn.functional.interpolate(self.decoder2(x), size=(x1.size(2), x1.size(3)), mode="bilinear", align_corners=True)
-        x4 = nn.functional.interpolate(self.decoder4(x), size=(x1.size(2), x1.size(3)), mode="bilinear", align_corners=True)
-        x8 = nn.functional.interpolate(self.decoder8(x), size=(x1.size(2), x1.size(3)), mode="bilinear", align_corners=True)
+        x2 = nn.functional.interpolate(
+            self.decoder2(x), size=(x1.size(2), x1.size(3)),
+            mode="bilinear", align_corners=True)
+        x4 = nn.functional.interpolate(
+            self.decoder4(x), size=(x1.size(2), x1.size(3)),
+            mode="bilinear", align_corners=True)
+        x8 = nn.functional.interpolate(
+            self.decoder8(x), size=(x1.size(2), x1.size(3)),
+            mode="bilinear", align_corners=True)
         cat = torch.cat([x1, x2, x4, x8], dim=1)
         f8 = self.fusion8(cat)
 
-        f8_up = nn.functional.interpolate(f8, size=(layer4.size(2), layer4.size(3)), mode="bilinear", align_corners=True)
+        f8_up = nn.functional.interpolate(
+            f8, size=(layer4.size(2), layer4.size(3)),
+            mode="bilinear", align_corners=True)
         f4 = self.fusion4(torch.cat([f8_up, self.skipconv4(layer4)], dim=1))
 
-        f4_up = nn.functional.interpolate(f4, size=(layer2.size(2), layer2.size(3)), mode="bilinear", align_corners=True)
+        f4_up = nn.functional.interpolate(
+            f4, size=(layer2.size(2), layer2.size(3)),
+            mode="bilinear", align_corners=True)
         f2 = self.fusion2(torch.cat([f4_up, self.skipconv2(layer2)], dim=1))
 
         flow = self.head(f2)
         return flow
 
+
 class MotionDecoderFlowNet(nn.Module):
+
     def __init__(self, input_dim=512, output_dim=2, combo=[1,2,4,8]):
         super(MotionDecoderFlowNet, self).__init__()
         global BN
@@ -260,9 +281,12 @@ class MotionDecoderFlowNet(nn.Module):
         self.predict_flow2 = predict_flow(192 + output_dim, output_dim)
         self.predict_flow1 = predict_flow(67 + output_dim, output_dim)
 
-        self.upsampled_flow8_to_4 = nn.ConvTranspose2d(output_dim, output_dim, 4, 2, 1, bias=False)
-        self.upsampled_flow4_to_2 = nn.ConvTranspose2d(output_dim, output_dim, 4, 2, 1, bias=False)
-        self.upsampled_flow2_to_1 = nn.ConvTranspose2d(output_dim, output_dim, 4, 2, 1, bias=False)
+        self.upsampled_flow8_to_4 = nn.ConvTranspose2d(
+            output_dim, output_dim, 4, 2, 1, bias=False)
+        self.upsampled_flow4_to_2 = nn.ConvTranspose2d(
+            output_dim, output_dim, 4, 2, 1, bias=False)
+        self.upsampled_flow2_to_1 = nn.ConvTranspose2d(
+            output_dim, output_dim, 4, 2, 1, bias=False)
 
         self.deconv8 = deconv(256, 128)
         self.deconv4 = deconv(384 + output_dim, 128)
@@ -286,9 +310,15 @@ class MotionDecoderFlowNet(nn.Module):
 
         # propagation nets
         x1 = self.decoder1(x)
-        x2 = nn.functional.interpolate(self.decoder2(x), size=(x1.size(2), x1.size(3)), mode="bilinear", align_corners=True)
-        x4 = nn.functional.interpolate(self.decoder4(x), size=(x1.size(2), x1.size(3)), mode="bilinear", align_corners=True)
-        x8 = nn.functional.interpolate(self.decoder8(x), size=(x1.size(2), x1.size(3)), mode="bilinear", align_corners=True)
+        x2 = nn.functional.interpolate(
+            self.decoder2(x), size=(x1.size(2), x1.size(3)),
+            mode="bilinear", align_corners=True)
+        x4 = nn.functional.interpolate(
+            self.decoder4(x), size=(x1.size(2), x1.size(3)),
+            mode="bilinear", align_corners=True)
+        x8 = nn.functional.interpolate(
+            self.decoder8(x), size=(x1.size(2), x1.size(3)),
+            mode="bilinear", align_corners=True)
         cat = torch.cat([x1, x2, x4, x8], dim=1)
         feat8 = self.fusion8(cat) # 256
 
@@ -312,13 +342,17 @@ class MotionDecoderFlowNet(nn.Module):
         
         return [flow1, flow2, flow4, flow8]
 
+
 def predict_flow(in_planes, out_planes):
-    return nn.Conv2d(in_planes, out_planes, kernel_size=3,stride=1,padding=1,bias=True)
+    return nn.Conv2d(in_planes, out_planes, kernel_size=3,
+                     stride=1, padding=1, bias=True)
+
 
 def deconv(in_planes, out_planes):
     return nn.Sequential(
-        nn.ConvTranspose2d(in_planes, out_planes, kernel_size=4, stride=2, padding=1, bias=True),
-        nn.LeakyReLU(0.1,inplace=True)
+        nn.ConvTranspose2d(in_planes, out_planes, kernel_size=4,
+                           stride=2, padding=1, bias=True),
+        nn.LeakyReLU(0.1, inplace=True)
     )
 
 

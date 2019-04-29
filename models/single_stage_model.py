@@ -7,6 +7,7 @@ import models
 import utils
 
 class SingleStageModel(object):
+
     def __init__(self, params, dist_model=False):
         model_params = params['module']
         self.model = models.modules.__dict__[params['module']['arch']](model_params)
@@ -20,11 +21,13 @@ class SingleStageModel(object):
             self.world_size = 1
 
         if params['optim'] == 'SGD':
-            self.optim = torch.optim.SGD(self.model.parameters(), lr=params['lr'],
+            self.optim = torch.optim.SGD(
+                self.model.parameters(), lr=params['lr'],
                 momentum=0.9, weight_decay=0.0001)
         elif params['optim'] == 'Adam':
-            self.optim = torch.optim.Adam(self.model.parameters(),
-                lr=params['lr'], betas=(params['beta1'], 0.999))
+            self.optim = torch.optim.Adam(
+                self.model.parameters(), lr=params['lr'],
+                betas=(params['beta1'], 0.999))
         else:   
             raise Exception("No such optimizer: {}".format(params['optim']))
 
@@ -57,9 +60,9 @@ class SingleStageModel(object):
         path = os.path.join(path, "ckpt_iter_{}.pth.tar".format(Iter))
 
         torch.save({
-                'step': Iter,
-                'state_dict': self.model.state_dict(),
-                'optimizer': self.optim.state_dict()}, path)
+            'step': Iter,
+            'state_dict': self.model.state_dict(),
+            'optimizer': self.optim.state_dict()}, path)
 
     def switch_to(self, phase):
         if phase == 'train':

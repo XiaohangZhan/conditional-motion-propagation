@@ -1,7 +1,7 @@
+import multiprocessing as mp
 import argparse
 import os
 import yaml
-import multiprocessing as mp
 
 from utils import dist_init
 from trainer import Trainer

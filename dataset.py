@@ -1,14 +1,16 @@
-import sys
-import torch
-from torch.utils.data import Dataset
-import torchvision.transforms as transforms
 import numpy as np
 import io
 from PIL import Image
+
+import torch
+import torchvision.transforms as transforms
+from torch.utils.data import Dataset
+
 from utils.flowlib import read_flo_file
 from utils import image_crop, image_resize, image_flow_crop, image_flow_resize, flow_sampler, image_flow_aug, flow_aug
 
 class ColorAugmentation(object):
+
     def __init__(self, eig_vec=None, eig_val=None):
         if eig_vec == None:
             eig_vec = torch.Tensor([
@@ -28,6 +30,7 @@ class ColorAugmentation(object):
         tensor = tensor + quatity.view(3, 1, 1)
         return tensor
 
+
 def pil_loader(img_str, ch):
     buff = io.BytesIO(img_str)
     if ch == 1:
@@ -37,6 +40,7 @@ def pil_loader(img_str, ch):
             img = img.convert('RGB')
         return img
 
+
 def pil_loader_str(img_str, ch):
     if ch == 1:
         return Image.open(img_str)
@@ -45,7 +49,9 @@ def pil_loader_str(img_str, ch):
             img = img.convert('RGB')
         return img
 
+
 class ImageFlowDataset(Dataset):
+
     def __init__(self, meta_file, config, phase):
         self.img_transform = transforms.Compose([
             transforms.Normalize(config['data_mean'], config['data_div'])
@@ -111,18 +117,22 @@ class ImageFlowDataset(Dataset):
 
         ## resize
         if self.short_size is not None or self.long_size is not None:
-            img1, img2, flow, ratio = image_flow_resize(img1, img2, flow, short_size=self.short_size, long_size=self.long_size)
+            img1, img2, flow, ratio = image_flow_resize(
+                img1, img2, flow, short_size=self.short_size,
+                long_size=self.long_size)
 
         ## crop
         if self.crop_size is not None:
-            img1, img2, flow, offset = image_flow_crop(img1, img2, flow, self.crop_size, self.phase)
+            img1, img2, flow, offset = image_flow_crop(
+                img1, img2, flow, self.crop_size, self.phase)
 
         ## augmentation
         if self.phase == 'train':
             # image flow aug
             img1, img2, flow = image_flow_aug(img1, img2, flow, flip_horizon=self.aug_flip)
             # flow aug
-            flow = flow_aug(flow, reverse=self.aug_reverse, scale=self.aug_scale, rotate=self.aug_rotate)
+            flow = flow_aug(flow, reverse=self.aug_reverse,
+                            scale=self.aug_scale, rotate=self.aug_rotate)
 
         ## transform
         img1 = torch.from_numpy(np.array(img1).astype(np.float32).transpose((2,0,1)))
@@ -131,14 +141,19 @@ class ImageFlowDataset(Dataset):
         img2 = self.img_transform(img2)
 
         ## sparse sampling
-        sparse_flow, mask = flow_sampler(flow, strategy=self.sample_strategy, bg_ratio=self.sample_bg_ratio, nms_ks=self.nms_ks, max_num_guide=self.max_num_guide) # (h,w,2), (h,w,2)
+        sparse_flow, mask = flow_sampler(
+            flow, strategy=self.sample_strategy,
+            bg_ratio=self.sample_bg_ratio, nms_ks=self.nms_ks,
+            max_num_guide=self.max_num_guide) # (h,w,2), (h,w,2)
 
         flow = torch.from_numpy(flow.transpose((2, 0, 1)))
         sparse_flow = torch.from_numpy(sparse_flow.transpose((2, 0, 1)))
         mask = torch.from_numpy(mask.transpose((2, 0, 1)).astype(np.float32))
         return img1, sparse_flow, mask, flow, img2
 
+
 class ImageDataset(Dataset):
+
     def __init__(self, meta_file, config):
         self.img_transform = transforms.Compose([
             transforms.Normalize(config['data_mean'], config['data_div'])
