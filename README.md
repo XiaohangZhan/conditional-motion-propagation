@@ -4,12 +4,19 @@
 
 Xiaohang Zhan, Xingang Pan, Ziwei Liu, Dahua Lin, Chen Change Loy, "[Self-Supervised Learning via Conditional Motion Propagation](https://arxiv.org/abs/1903.11412)", in CVPR 2019 [[Project Page](http://mmlab.ie.cuhk.edu.hk/projects/CMP/)]
 
-### Requirements
- 
-* python>=3.6
-* pytorch>=0.4.0
-* opencv-python>=2.4.9
-* tensorboardX (optional)
+For further information, please contact [Xiaohang Zhan](https://xiaohangzhan.github.io/).
+
+### Demos
+
+* Conditional motion propagation
+
+* Guided video generation (draw arrows to let a static image animated)
+
+![](demos/demo_video_generation.gif)
+
+* Semi-automatic annotation (first row: interface, auto zoom-in, mask; second row: optical flows)
+
+![](demos/demo_annotation.gif)
 
 ### Data collection
 
@@ -21,7 +28,15 @@ Xiaohang Zhan, Xingang Pan, Ziwei Liu, Dahua Lin, Chen Change Loy, "[Self-Superv
 
 * Comming soon
 
+### Requirements
+ 
+* python>=3.6
+* pytorch>=0.4.0
+* opencv-python>=2.4.9
+* tensorboardX (optional)
+
 ### Usage
+
 0. Clone the repo.
 
     ```shell
@@ -71,16 +86,6 @@ Xiaohang Zhan, Xingang Pan, Ziwei Liu, Dahua Lin, Chen Change Loy, "[Self-Superv
     ```
 
 ### Results
-
-### Demos
-
-* Video generation
-
-![](demos/demo_video_generation.gif)
-
-* Semi-automatic Annotation (first row: interface, auto zoom-in, mask; second row: optical flows)
-
-![](demos/demo_annotation.gif)
 
 ### Bibtex
 
