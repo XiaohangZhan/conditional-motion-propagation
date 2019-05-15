@@ -6,6 +6,7 @@ import yaml
 from utils import dist_init
 from trainer import Trainer
 
+
 def main(args):
     with open(args.config) as f:
         config = yaml.load(f)
@@ -25,6 +26,7 @@ def main(args):
     # train
     trainer = Trainer(args)
     trainer.run()
+
 
 if __name__ == '__main__':
 
