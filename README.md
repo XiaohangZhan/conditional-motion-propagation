@@ -6,7 +6,7 @@ Xiaohang Zhan, Xingang Pan, Ziwei Liu, Dahua Lin, Chen Change Loy, "[Self-Superv
 
 For further information, please contact [Xiaohang Zhan](https://xiaohangzhan.github.io/).
 
-### Demos
+### Demos (Watching in [YouTube](https://www.youtube.com/watch?v=6R_oJCq5qMw))
 
 * Conditional motion propagation
 
