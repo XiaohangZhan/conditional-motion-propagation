@@ -90,7 +90,7 @@ For further information, please contact [Xiaohang Zhan](https://xiaohangzhan.git
 ### Bibtex
 
 ```
-@inproceedings{zhan2019conditional,
+@inproceedings{zhan2019self,
  author = {Zhan, Xiaohang and Pan, Xingang and Liu, Ziwei and Lin, Dahua and Loy, Chen Change},
  title = {Self-Supervised Learning via Conditional Motion Propagation},
  booktitle = {Proceedings of the IEEE conference on computer vision and pattern recognition (CVPR)},
