@@ -73,7 +73,7 @@ pip install -r requirements.txt
 
     ```shell
     sh experiments/rep_learning/alexnet_yfcc/train.sh # 8 GPUs distributed training
-    sh tools/weight_process.sh --config experiments/rep_learning/alexnet_yfcc/config.yaml --iter 70000 # extract weights of the image encoder
+    python tools/weight_process.py --config experiments/rep_learning/alexnet_yfcc/config.yaml --iter 70000 # extract weights of the image encoder
     ```
 
 3. Train CMP for Video generation and Semi-automatic Annotation.
