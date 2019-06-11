@@ -32,8 +32,11 @@ For further information, please contact [Xiaohang Zhan](https://xiaohangzhan.git
  
 * python>=3.6
 * pytorch>=0.4.0
-* opencv-python>=2.4.9
-* tensorboardX (optional)
+* others
+
+```shell
+pip install -r requirements.txt
+```
 
 ### Usage
 
