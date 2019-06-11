@@ -6,7 +6,7 @@ Xiaohang Zhan, Xingang Pan, Ziwei Liu, Dahua Lin, Chen Change Loy, "[Self-Superv
 
 For further information, please contact [Xiaohang Zhan](https://xiaohangzhan.github.io/).
 
-### Demos
+### Demos (Watching in [YouTube](https://www.youtube.com/watch?v=6R_oJCq5qMw))
 
 * Conditional motion propagation
 
@@ -93,7 +93,7 @@ pip install -r requirements.txt
 ### Bibtex
 
 ```
-@inproceedings{zhan2019conditional,
+@inproceedings{zhan2019self,
  author = {Zhan, Xiaohang and Pan, Xingang and Liu, Ziwei and Lin, Dahua and Loy, Chen Change},
  title = {Self-Supervised Learning via Conditional Motion Propagation},
  booktitle = {Proceedings of the IEEE conference on computer vision and pattern recognition (CVPR)},
