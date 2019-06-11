@@ -6,7 +6,7 @@ Xiaohang Zhan, Xingang Pan, Ziwei Liu, Dahua Lin, Chen Change Loy, "[Self-Superv
 
 For further information, please contact [Xiaohang Zhan](https://xiaohangzhan.github.io/).
 
-### Demos
+### Demos (Watching in [YouTube](https://www.youtube.com/watch?v=6R_oJCq5qMw))
 
 * Conditional motion propagation
 
@@ -32,8 +32,11 @@ For further information, please contact [Xiaohang Zhan](https://xiaohangzhan.git
  
 * python>=3.6
 * pytorch>=0.4.0
-* opencv-python>=2.4.9
-* tensorboardX (optional)
+* others
+
+```shell
+pip install -r requirements.txt
+```
 
 ### Usage
 
@@ -70,7 +73,7 @@ For further information, please contact [Xiaohang Zhan](https://xiaohangzhan.git
 
     ```shell
     sh experiments/rep_learning/alexnet_yfcc/train.sh # 8 GPUs distributed training
-    sh tools/weight_process.sh --config experiments/rep_learning/alexnet_yfcc/config.yaml --iter 70000 # extract weights of the image encoder
+    python tools/weight_process.py --config experiments/rep_learning/alexnet_yfcc/config.yaml --iter 70000 # extract weights of the image encoder
     ```
 
 3. Train CMP for Video generation and Semi-automatic Annotation.
@@ -90,7 +93,7 @@ For further information, please contact [Xiaohang Zhan](https://xiaohangzhan.git
 ### Bibtex
 
 ```
-@inproceedings{zhan2019conditional,
+@inproceedings{zhan2019self,
  author = {Zhan, Xiaohang and Pan, Xingang and Liu, Ziwei and Lin, Dahua and Loy, Chen Change},
  title = {Self-Supervised Learning via Conditional Motion Propagation},
  booktitle = {Proceedings of the IEEE conference on computer vision and pattern recognition (CVPR)},

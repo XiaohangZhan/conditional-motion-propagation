@@ -1,8 +1,12 @@
 import torch
 import yaml
 import argparse
+import sys
+sys.path.append('.')
 import models
 import os
+
+import pdb
 
 model_names = sorted(name for name in models.__dict__
     if name.islower() and not name.startswith("__")
@@ -19,11 +23,10 @@ def main():
     with open(args.config) as f:
         config = yaml.load(f)
     
-    for k, v in config['common'].items():
+    for k, v in config.items():
         setattr(args, k, v)
     
-    model_params = args.model[args.model['arch']]
-    model = models.modules.__dict__[args.model['arch']](model_params)
+    model = models.modules.__dict__[args.model['module']['arch']](args.model['module'])
     model.cuda()
     model = torch.nn.DataParallel(model)
     
@@ -31,7 +34,7 @@ def main():
     save_path = exp_dir + '/checkpoints/convert_iter_{}.pth.tar'.format(args.iter)
     ckpt = torch.load(ckpt_path)
     weight = ckpt['state_dict']
-    model.load_state_dict(weight, strict=False)
+    model.load_state_dict(weight, strict=True)
     model.cpu()
     model = model.module.image_encoder
     
