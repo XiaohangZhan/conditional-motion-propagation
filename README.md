@@ -6,7 +6,7 @@ Xiaohang Zhan, Xingang Pan, Ziwei Liu, Dahua Lin, Chen Change Loy, "[Self-Superv
 
 For further information, please contact [Xiaohang Zhan](https://xiaohangzhan.github.io/).
 
-## Demos (Watching in [YouTube](https://www.youtube.com/watch?v=6R_oJCq5qMw))
+## Demos (Watching full demos in [YouTube](https://www.youtube.com/watch?v=6R_oJCq5qMw))
 
 * Conditional motion propagation
 
@@ -26,9 +26,9 @@ For further information, please contact [Xiaohang Zhan](https://xiaohangzhan.git
 
 ## Model collection
 
-* Pre-trained models for semantic segmentation, instance segmentation and human parsing by CMP can be downloaded [here](https://drive.google.com/open?id=1Kx-OIcr2U44p9mlpV-SbhANQdtbn2rJR):
+* Pre-trained models for semantic segmentation, instance segmentation and human parsing by CMP can be downloaded [here](https://drive.google.com/open?id=1Kx-OIcr2U44p9mlpV-SbhANQdtbn2rJR)
 
-* Models for image animation and semi-automatic annotation can be downloaded [here](https://drive.google.com/open?id=1JMuoexvRCUQ0cmtfyse-8OScLHA6tjuI)
+* Models for demos (conditinal motion propagation, guided video generation and semi-automatic annotation) can be downloaded [here](https://drive.google.com/open?id=1JMuoexvRCUQ0cmtfyse-8OScLHA6tjuI)
 
 ## Requirements
  
@@ -90,11 +90,11 @@ For further information, please contact [Xiaohang Zhan](https://xiaohangzhan.git
 
 ### Run demos
 
-    1. Download the model and move to `experiments/semiauto_annot/resnet50_vip+mpii_liteflow/checkpoints/`
+1. Download the model and move it to `experiments/semiauto_annot/resnet50_vip+mpii_liteflow/checkpoints/`
 
-    2. Launch jupyter notebook and run `demos/cmp.ipynb` for conditional flow prediction, or `demos/demo_annot.ipynb` for semi-automatic annotation.
+2. Launch jupyter notebook and run `demos/cmp.ipynb` for conditional motion propagation, or `demos/demo_annot.ipynb` for semi-automatic annotation.
 
-    3. Train the model by yourself (optional)
+3. Train the model by yourself (optional)
 
     ```sh
     # data not ready
