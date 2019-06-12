@@ -1,7 +1,7 @@
 model:
     arch: CMP
-    total_iter: 70000
-    lr_steps: [40000, 60000]
+    total_iter: 42000
+    lr_steps: [24000, 36000]
     lr_mults: [0.1, 0.1]
     lr: 0.1
     optim: SGD
