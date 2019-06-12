@@ -8,7 +8,9 @@ For further information, please contact [Xiaohang Zhan](https://xiaohangzhan.git
 
 ### Demos (Watching in [YouTube](https://www.youtube.com/watch?v=6R_oJCq5qMw))
 
-* Conditional motion propagation
+* Conditional motion propagation (motion prediction by guidance)
+
+![](demos/demo_cmp.gif)
 
 * Guided video generation (draw arrows to let a static image animated)
 
