@@ -1,12 +1,12 @@
 # Implementation of "Self-Supervised Learning via Conditional Motion Propagation" (CMP)
 
-### Paper
+## Paper
 
 Xiaohang Zhan, Xingang Pan, Ziwei Liu, Dahua Lin, Chen Change Loy, "[Self-Supervised Learning via Conditional Motion Propagation](https://arxiv.org/abs/1903.11412)", in CVPR 2019 [[Project Page](http://mmlab.ie.cuhk.edu.hk/projects/CMP/)]
 
 For further information, please contact [Xiaohang Zhan](https://xiaohangzhan.github.io/).
 
-### Demos (Watching in [YouTube](https://www.youtube.com/watch?v=6R_oJCq5qMw))
+## Demos (Watching in [YouTube](https://www.youtube.com/watch?v=6R_oJCq5qMw))
 
 * Conditional motion propagation
 
@@ -18,40 +18,42 @@ For further information, please contact [Xiaohang Zhan](https://xiaohangzhan.git
 
 ![](demos/demo_annotation.gif)
 
-### Data collection
+## Data collection
 
 [YFCC frames](https://dl.fbaipublicfiles.com/unsupervised-video/UnsupVideo_Frames_v1.tar.gz) (45G).
 [YFCC optical flows (LiteFlowNet)](https://drive.google.com/open?id=1S_TU1UjKms-U_Q4bOhXfUfIJX5hgwOtq) (29G).
 [YFCC lists](https://drive.google.com/open?id=1ObzO7xWXolPKrIC39XCvjttZYEoVn6k2) (251M).
 
-### Model collection
+## Model collection
 
 * Pre-trained models for semantic segmentation, instance segmentation and human parsing by CMP can be downloaded [here](https://drive.google.com/open?id=1Kx-OIcr2U44p9mlpV-SbhANQdtbn2rJR):
 
 * Models for image animation and semi-automatic annotation can be downloaded [here](https://drive.google.com/open?id=1JMuoexvRCUQ0cmtfyse-8OScLHA6tjuI)
 
-### Requirements
+## Requirements
  
 * python>=3.6
 * pytorch>=0.4.0
 * others
 
-```shell
-pip install -r requirements.txt
-```
+    ```sh
+    pip install -r requirements.txt
+    ```
 
-### Usage
+## Usage
 
 0. Clone the repo.
 
-    ```shell
+    ```sh
     git clone git@github.com:XiaohangZhan/conditional-motion-propagation.git
     cd conditional-motion-propagation
     ```
 
+### Representation learning
+
 1. Prepare data (YFCC as an example)
 
-    ```shell
+    ```sh
     mkdir data
     mkdir data/yfcc
     cd data/yfcc
@@ -75,27 +77,28 @@ pip install -r requirements.txt
 
     * If your server supports multi-nodes training.
 
-    ```shell
+    ```sh
     sh experiments/rep_learning/alexnet_yfcc_16gpu_70k/train.sh # 16 GPUs distributed training
     python tools/weight_process.py --config experiments/rep_learning/alexnet_yfcc_16gpu_70k/config.yaml --iter 70000 # extract weights of the image encoder to experiments/rep_learning/alexnet_yfcc_16gpu_70k/checkpoints/convert_iter_70000.pth.tar
     ```
 
     * If your server does not support multi-nodes training.
-    ```shell
+    ```sh
     sh experiments/rep_learning/alexnet_yfcc_8gpu_140k/train.sh # 8 GPUs distributed training
     python tools/weight_process.py --config experiments/rep_learning/alexnet_yfcc_8gpu_140k/config.yaml --iter 140000 # extract weights of the image encoder
     ```
 
-3. Train CMP for Video generation and Semi-automatic Annotation.
+### Run demos
 
-    ```shell
-    # comming soon
-    ```
+    1. Download the model and move to `experiments/semiauto_annot/resnet50_vip+mpii_liteflow/checkpoints/`
 
-4. Run demos
+    2. Launch jupyter notebook and run `demos/cmp.ipynb` for conditional flow prediction, or `demos/demo_annot.ipynb` for semi-automatic annotation.
 
-    ```shell
-    # comming soon
+    3. Train the model by yourself (optional)
+
+    ```sh
+    # data not ready
+    sh experiments/semiauto_annot/resnet50_vip+mpii_liteflow/train.sh # 8 GPUs distributed training
     ```
 
 ### Results
