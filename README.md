@@ -92,7 +92,7 @@ For further information, please contact [Xiaohang Zhan](https://xiaohangzhan.git
 
 ### Run demos
 
-1. Download the model and move it to `experiments/semiauto_annot/resnet50_vip+mpii_liteflow/checkpoints/`
+1. Download the [model](https://drive.google.com/open?id=1JMuoexvRCUQ0cmtfyse-8OScLHA6tjuI) and move it to `experiments/semiauto_annot/resnet50_vip+mpii_liteflow/checkpoints/`.
 
 2. Launch jupyter notebook and run `demos/cmp.ipynb` for conditional motion propagation, or `demos/demo_annot.ipynb` for semi-automatic annotation.
 
