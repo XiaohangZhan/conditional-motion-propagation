@@ -21,13 +21,12 @@ def main():
     exp_dir = os.path.dirname(args.config)
     
     with open(args.config) as f:
-        config = yaml.load(f)
+        config = yaml.load(f, Loader=yaml.FullLoader)
     
     for k, v in config.items():
         setattr(args, k, v)
     
     model = models.modules.__dict__[args.model['module']['arch']](args.model['module'])
-    model.cuda()
     model = torch.nn.DataParallel(model)
     
     ckpt_path = exp_dir + '/checkpoints/ckpt_iter_{}.pth.tar'.format(args.iter)
@@ -35,7 +34,6 @@ def main():
     ckpt = torch.load(ckpt_path)
     weight = ckpt['state_dict']
     model.load_state_dict(weight, strict=True)
-    model.cpu()
     model = model.module.image_encoder
     
     torch.save(model.state_dict(), save_path)
