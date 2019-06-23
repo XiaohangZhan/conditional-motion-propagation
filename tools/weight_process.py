@@ -2,6 +2,8 @@ import torch
 import yaml
 import argparse
 import sys
+from packaging import version
+
 sys.path.append('.')
 import models
 import os
@@ -21,8 +23,11 @@ def main():
     exp_dir = os.path.dirname(args.config)
     
     with open(args.config) as f:
-        config = yaml.load(f, Loader=yaml.FullLoader)
-    
+        if version.parse(yaml.version >= "5.1"):
+            config = yaml.load(f, Loader=yaml.FullLoader)
+        else:
+            config = yaml.load(f)
+
     for k, v in config.items():
         setattr(args, k, v)
     

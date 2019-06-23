@@ -2,6 +2,7 @@ import multiprocessing as mp
 import argparse
 import os
 import yaml
+from packaging import version
 
 from utils import dist_init
 from trainer import Trainer
@@ -9,7 +10,10 @@ from trainer import Trainer
 
 def main(args):
     with open(args.config) as f:
-        config = yaml.load(f, Loader=yaml.FullLoader)
+        if version.parse(yaml.version >= "5.1"):
+            config = yaml.load(f, Loader=yaml.FullLoader)
+        else:
+            config = yaml.load(f)
 
     for k, v in config.items():
         setattr(args, k, v)
