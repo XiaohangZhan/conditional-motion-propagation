@@ -80,14 +80,14 @@ For further information, please contact [Xiaohang Zhan](https://xiaohangzhan.git
     * If your server supports multi-nodes training.
 
     ```sh
-    sh experiments/rep_learning/alexnet_yfcc_16gpu_70k/train.sh # 16 GPUs distributed training
-    python tools/weight_process.py --config experiments/rep_learning/alexnet_yfcc_16gpu_70k/config.yaml --iter 70000 # extract weights of the image encoder to experiments/rep_learning/alexnet_yfcc_16gpu_70k/checkpoints/convert_iter_70000.pth.tar
+    sh experiments/rep_learning/alexnet_yfcc_voc_16gpu_70k/train.sh # 16 GPUs distributed training
+    python tools/weight_process.py --config experiments/rep_learning/alexnet_yfcc_voc_16gpu_70k/config.yaml --iter 70000 # extract weights of the image encoder to experiments/rep_learning/alexnet_yfcc_voc_16gpu_70k/checkpoints/convert_iter_70000.pth.tar
     ```
 
     * If your server does not support multi-nodes training.
     ```sh
-    sh experiments/rep_learning/alexnet_yfcc_8gpu_140k/train.sh # 8 GPUs distributed training
-    python tools/weight_process.py --config experiments/rep_learning/alexnet_yfcc_8gpu_140k/config.yaml --iter 140000 # extract weights of the image encoder
+    sh experiments/rep_learning/alexnet_yfcc_voc_8gpu_140k/train.sh # 8 GPUs distributed training
+    python tools/weight_process.py --config experiments/rep_learning/alexnet_yfcc_voc_8gpu_140k/config.yaml --iter 140000 # extract weights of the image encoder
     ```
 
 ### Run demos
