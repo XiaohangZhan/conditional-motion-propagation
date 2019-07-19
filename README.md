@@ -186,6 +186,11 @@ For further information, please contact [Xiaohang Zhan](https://xiaohangzhan.git
         <li>Zeyu Feng, Chang Xu, and Dacheng Tao. Self-Supervised Representation Learning by Rotation Feature Decoupling. In CVPR, 2019.</li>
     </ol>
 
+
+### Core idea
+
+    A Chinese proverb: "牵一发而动全身".
+
 ### Bibtex
 
 ```
